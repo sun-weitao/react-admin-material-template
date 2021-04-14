@@ -1,8 +1,6 @@
-import Home from './views/home'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import './App.css';
 import { routers } from './router'
-
 function App() {
   return (
     <Router>
@@ -15,6 +13,9 @@ function App() {
                 path={route.path}
                 exact={route.exact}
                 render={(props) => {
+                  if(route.layout){
+                    return <route.layout component={route.component}/>
+                  }
                   return (<route.component />)
                 }}
               />
