@@ -13,8 +13,10 @@ function App() {
                 path={route.path}
                 exact={route.exact}
                 render={(props) => {
-                  if(route.layout){
-                    return <route.layout component={route.component}/>
+                  if (route.layout) {
+                    return <route.layout
+                      history={props.history}
+                      Component={route.component} />
                   }
                   return (<route.component />)
                 }}

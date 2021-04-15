@@ -3,7 +3,13 @@ import Home from './views/home/index'
 import Login from './views/login/index'
 import Table from './views/table/index'
 import SubTable from './views/table/sub-table/index'
-export const routers = [
+export const routers = [  
+    {
+        path:'/login',
+        name:"Login",
+        exact: true,//關鍵
+        component:Login
+    },
     {
         path:"/",
         name:"Index",
@@ -22,16 +28,8 @@ export const routers = [
                 path:'/sub-table',
                 name:'sub-table',
                 exact:true,
-                layout:Layout,
                 component:SubTable
             }
         ]
     },
-    {
-        path:'/login',
-        name:"Login",
-        exact: true,//關鍵
-        component:Login
-    }
 ]
-
