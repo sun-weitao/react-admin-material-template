@@ -17,6 +17,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import * as Actions from '../store/actions'
+import { connect } from 'react-redux';
 
 const drawerWidth = 240;
 
@@ -77,35 +79,37 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function PersistentDrawerLeft({ component }) {
+function PersistentDrawerLeft({ toggleSideBar, sideBarStatus, history, Component }) {
+
     const classes = useStyles();
     const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
-    const Component = component;
+    const paths = [
+        {
+            name: "index",
+            path: '/'
+        },
+        {
+            name: 'table',
+            path: '/table'
+        }
+    ]
     return (
         <div className={classes.root}>
             <CssBaseline />
             <AppBar
                 position="fixed"
                 className={clsx(classes.appBar, {
-                    [classes.appBarShift]: open,
+                    [classes.appBarShift]: sideBarStatus,
                 })}
             >
                 <Toolbar>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
-                        onClick={handleDrawerOpen}
+                        onClick={toggleSideBar}
                         edge="start"
-                        className={clsx(classes.menuButton, open && classes.hide)}
+                        className={clsx(classes.menuButton, sideBarStatus && classes.hide)}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -118,38 +122,37 @@ export default function PersistentDrawerLeft({ component }) {
                 className={classes.drawer}
                 variant="persistent"
                 anchor="left"
-                open={open}
+                open={sideBarStatus}
                 classes={{
                     paper: classes.drawerPaper,
                 }}
             >
                 <div className={classes.drawerHeader}>
-                    <IconButton onClick={handleDrawerClose}>
+                    <IconButton onClick={toggleSideBar}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                     </IconButton>
                 </div>
                 <Divider />
                 <List>
-                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider />
-                <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
+                    {
+                        paths.map((path, index) => {
+                            return (
+                                <ListItem
+                                    onClick={(event) => {
+                                        history.push(path.path);
+                                    }}
+                                    button key={index}>
+                                    <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                                    <ListItemText primary={path.name} />
+                                </ListItem>
+                            )
+                        })
+                    }
                 </List>
             </Drawer>
             <main
                 className={clsx(classes.content, {
-                    [classes.contentShift]: open,
+                    [classes.contentShift]: sideBarStatus,
                 })}
             >
                 <div className={classes.drawerHeader} />
@@ -158,3 +161,10 @@ export default function PersistentDrawerLeft({ component }) {
         </div>
     );
 }
+const mapStateToProps = (state) => ({
+    sideBarStatus: state.SettingReducer.sidebarStatus
+})
+const mapDispatchToProps = {
+    toggleSideBar: () => Actions.toggleSideBar()
+}
+export default connect(mapStateToProps, mapDispatchToProps)(PersistentDrawerLeft)
